@@ -1,0 +1,52 @@
+# 每天（北京时间 00:25 / 09:35 双保险）拉取 Bing 每日一图缓存进仓库：
+#   assets/bing-today.jpg  → 前端在 Bing 接口失败时用它兜底（同源，必定加载成功）
+# 幂等：图片 URL 没变就跳过提交
+name: 更新 Bing 每日背景图
+
+on:
+  schedule:
+    - cron: "25 16 * * *"   # 北京时间 00:25
+    - cron: "35 1 * * *"    # 北京时间 09:35（补跑）
+  workflow_dispatch:        # 支持手动触发
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bing-bg
+  cancel-in-progress: true
+
+jobs:
+  update-bg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 拉取今日 Bing 图
+        id: fetch
+        run: |
+          META=$(curl -sf "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN") || META=""
+          URL=$(echo "$META" | jq -r '.images[0].url // empty')
+          if [ -z "$URL" ]; then
+            echo "::warning::Bing 接口未返回图片地址，本次跳过"
+            exit 0
+          fi
+          OLD_URL=$(cat assets/bing-url.txt 2>/dev/null || echo "")
+          if [ "$URL" = "$OLD_URL" ] && [ -s assets/bing-today.jpg ]; then
+            echo "背景图已是最新，跳过提交"
+            exit 0
+          fi
+          mkdir -p assets
+          curl -sf -o assets/bing-today.jpg "https://www.bing.com${URL}" || {
+            echo "::warning::图片下载失败"; exit 0; }
+          echo "$URL" > assets/bing-url.txt
+          echo "updated=true" >> "$GITHUB_OUTPUT"
+
+      - name: 提交到仓库
+        if: steps.fetch.outputs.updated == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/
+          git commit -m "背景图更新 $(date -u +%F)"
+          git push
