@@ -13,7 +13,8 @@ const CONFIG = {
   statusPath: '/status.json',     // 健康数据主路径（可改成任意 URL，如 https://xxx/status.json）
   statusPathAlt: 'status.json',   // 兜底相对路径：子路径部署 / file:// 直开时主路径会 404
   bingApi:
-    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN',
+    // ensearch=1 强制国际版（en-US）每日图；不带它中国网络会被打回国内版
+    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US&ensearch=1',
   // 仓库内缓存的每日 Bing 图（.github/workflows/bing-bg.yml 每天自动更新）。
   // Bing 接口失败时用它兜底：同源相对路径，必定加载成功，不会再灰蒙蒙。
   fallbackBg: 'assets/bing-today.jpg',
@@ -84,6 +85,27 @@ function showBgFallback() {
   $('#bg').classList.add('bg-fallback', 'is-ready');
 }
 
+/* 从响应文本中提取第一个完整 JSON 对象（Bing 偶发在 JSON 尾部粘杂质，
+   直接 res.json() 会炸，这里用括号配平截取，对杂质免疫） */
+function extractJson(text) {
+  const start = text.indexOf('{');
+  if (start < 0) return null;
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < text.length; i++) {
+    const c = text[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === '\\') esc = true;
+      else if (c === '"') inStr = false;
+    } else {
+      if (c === '"') inStr = true;
+      else if (c === '{') depth++;
+      else if (c === '}') { depth--; if (!depth) return text.slice(start, i + 1); }
+    }
+  }
+  return null;
+}
+
 async function loadBackground(force = false) {
   const today = todayStr();
 
@@ -98,7 +120,8 @@ async function loadBackground(force = false) {
   try {
     const res = await fetch(CONFIG.bingApi);
     if (!res.ok) throw 0;
-    const data = await res.json();
+    const json = extractJson(await res.text());
+    const data = json ? JSON.parse(json) : null;
     const pic = data && data.images && data.images[0];
     if (!pic || !pic.url) throw 0;
     const url = 'https://www.bing.com' + pic.url;

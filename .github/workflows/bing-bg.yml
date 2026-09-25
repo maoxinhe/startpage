@@ -1,4 +1,4 @@
-# 每天（北京时间 00:25 / 09:35 双保险）拉取 Bing 每日一图缓存进仓库：
+# 每天（北京时间 00:25 / 09:35 双保险）拉取 Bing 国际版（en-US）每日一图缓存进仓库：
 #   assets/bing-today.jpg  → 前端在 Bing 接口失败时用它兜底（同源，必定加载成功）
 # 幂等：图片 URL 没变就跳过提交
 name: 更新 Bing 每日背景图
@@ -22,11 +22,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 拉取今日 Bing 图
+      - name: 拉取今日 Bing 国际版图
         id: fetch
         run: |
-          META=$(curl -sf "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN") || META=""
-          URL=$(echo "$META" | jq -r '.images[0].url // empty')
+          RAW=$(curl -sf "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US&ensearch=1") || RAW=""
+          # ensearch=1 强制国际版；响应偶发在 JSON 尾部粘杂质，用 python 提取首个 JSON 对象
+          URL=$(printf '%s' "$RAW" | python3 -c "
+import json,sys
+raw=sys.stdin.read()
+dec=json.JSONDecoder()
+try:
+    obj,end=dec.raw_decode(raw.lstrip())
+    print(obj['images'][0]['url'])
+except Exception:
+    pass" 2>/dev/null)
           if [ -z "$URL" ]; then
             echo "::warning::Bing 接口未返回图片地址，本次跳过"
             exit 0
