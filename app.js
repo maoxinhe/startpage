@@ -189,10 +189,7 @@ function filterCards(q) {
     const hit = !q || (card.dataset.keywords || '').includes(q);
     card.style.display = hit ? '' : 'none';
   });
-  document.querySelectorAll('#groups .group').forEach((sec) => {
-    const any = [...sec.querySelectorAll('.card')].some((c) => c.style.display !== 'none');
-    sec.style.display = any ? '' : 'none';
-  });
+  refreshGroupsVisibility();
 }
 
 function doSearch() {
@@ -230,8 +227,31 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ==========================================================
-   三、导航卡片（nav.json → 按 group 分区渲染）
+   三、导航卡片（nav.json → 横向分类 tabs + 卡片面板，仿青柠）
    ========================================================== */
+
+const TAB_KEY = 'nav.tab';
+let activeTab = localStorage.getItem(TAB_KEY) || 'all';
+
+/* 切换分类：高亮 tab，并重算分组可见性（tab 与站内过滤条件叠加） */
+function applyTab() {
+  document.querySelectorAll('.group-tab').forEach((b) =>
+    b.classList.toggle('active', b.dataset.tab === activeTab));
+  // 「全部」视图显示各分组小标题
+  $('#groups').dataset.all = activeTab === 'all' ? '1' : '0';
+  refreshGroupsVisibility();
+}
+
+/* 分组可见性 = tab 匹配 && 组内有（符合过滤条件的）卡片 */
+function refreshGroupsVisibility() {
+  const q = (engine === 'local' ? input.value : '').trim().toLowerCase();
+  document.querySelectorAll('#groups .group').forEach((sec) => {
+    const hasVisible = [...sec.querySelectorAll('.card')].some((c) =>
+      c.style.display !== 'none' && (!q || (c.dataset.keywords || '').includes(q)));
+    const tabOk = q || activeTab === 'all' || sec.dataset.group === activeTab;
+    sec.style.display = (tabOk && hasVisible) ? '' : 'none';
+  });
+}
 
 async function loadNav() {
   try {
@@ -257,9 +277,32 @@ function renderNav(items) {
   });
 
   const wrap = $('#groups');
+
+  /* 分类 tabs：「全部」+ 各分组，当前项存 localStorage */
+  const tabBar = document.createElement('div');
+  tabBar.className = 'group-tabs';
+  const mkTab = (label, key) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'group-tab';
+    b.textContent = label;
+    b.dataset.tab = key;
+    b.addEventListener('click', () => {
+      activeTab = key;
+      localStorage.setItem(TAB_KEY, key);
+      applyTab();
+    });
+    return b;
+  };
+  tabBar.appendChild(mkTab('全部', 'all'));
+  for (const g of groups.keys()) tabBar.appendChild(mkTab(g, g));
+  wrap.appendChild(tabBar);
+
+  /* 各分组卡片面板 */
   for (const [g, list] of groups) {
     const sec = document.createElement('section');
     sec.className = 'group';
+    sec.dataset.group = g;
     sec.innerHTML = `<h2 class="group-title">${esc(g)}</h2>`;
 
     const box = document.createElement('div');
@@ -288,6 +331,8 @@ function renderNav(items) {
     sec.appendChild(box);
     wrap.appendChild(sec);
   }
+
+  applyTab();
 }
 
 /* ==========================================================

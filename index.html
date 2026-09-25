@@ -11,35 +11,46 @@
 </head>
 <body>
 
-  <!-- 背景：Bing 每日一图（app.js 注入），加载前为纯色 #0e0e10 占位 -->
+  <!-- 背景：Bing 国际版每日一图（app.js 注入），失败退仓库缓存图，再退青柠渐变 -->
   <div class="bg" id="bg" aria-hidden="true"></div>
   <!-- 半透明遮罩：保证文字可读 -->
   <div class="veil" aria-hidden="true"></div>
 
   <main class="page">
 
-    <!-- ===== 时钟（青柠起始页的视觉锚点） ===== -->
-    <div class="clock" aria-label="当前时间">
-      <div class="clock-time" id="clockTime">--:--</div>
-      <div class="clock-date" id="clockDate"></div>
+    <!-- ===== 顶栏：logo ===== -->
+    <header class="topbar">
+      <a class="logo" href="./" title="起始页">
+        <span class="logo-dot" aria-hidden="true"></span>起始页
+      </a>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== 时钟（视觉锚点） ===== -->
+      <div class="clock" aria-label="当前时间">
+        <div class="clock-time" id="clockTime">--:--</div>
+        <div class="clock-date" id="clockDate"></div>
+      </div>
+
+      <!-- ===== 顶部搜索 ===== -->
+      <section class="search-area">
+        <form class="search-box" id="searchForm" role="search" autocomplete="off">
+          <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" type="text" placeholder="搜点什么…"
+                 autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="搜索">
+        </form>
+        <!-- 引擎切换：app.js 生成，localStorage 记住选择 -->
+        <nav class="engine-bar" id="engineBar" aria-label="切换搜索引擎"></nav>
+      </section>
+
+      <!-- ===== 分组 tabs + 卡片面板（app.js 按 nav.json 渲染，tab 切换仿青柠） ===== -->
+      <section class="groups" id="groups" aria-label="导航"></section>
+
     </div>
-
-    <!-- ===== 顶部搜索 ===== -->
-    <section class="search-area">
-      <form class="search-box" id="searchForm" role="search" autocomplete="off">
-        <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
-          <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <input id="searchInput" type="text" placeholder="搜点什么…"
-               autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="搜索">
-      </form>
-      <!-- 引擎切换：app.js 生成，localStorage 记住选择 -->
-      <nav class="engine-bar" id="engineBar" aria-label="切换搜索引擎"></nav>
-    </section>
-
-    <!-- ===== 导航卡片（app.js 按 nav.json 渲染，按 group 分区） ===== -->
-    <section class="groups" id="groups" aria-label="导航"></section>
 
   </main>
 
