@@ -20,12 +20,17 @@ const CONFIG = {
   fallbackBg: 'assets/bing-today.jpg',
 };
 
-/* 搜索引擎（站内 = 过滤本页卡片） */
+/* 搜索引擎（站内 = 过滤本页卡片）
+   icon: 青柠 iconfont 码点；svg: 无字体图标时的内联 SVG（如 GitHub octocat） */
 const ENGINES = [
-  { id: 'bing',   label: '必应',   url: 'https://www.bing.com/search?q=%s' },
-  { id: 'google', label: 'Google', url: 'https://www.google.com/search?q=%s' },
-  { id: 'github', label: 'GitHub', url: 'https://github.com/search?q=%s' },
-  { id: 'local',  label: '站内',   url: null },
+  { id: 'bing',   label: '必应',   icon: '\ue608',
+    url: 'https://www.bing.com/search?q=%s' },
+  { id: 'google', label: 'Google', icon: '\ue624',
+    url: 'https://www.google.com/search?q=%s' },
+  { id: 'github', label: 'GitHub',
+    svg: '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>',
+    url: 'https://github.com/search?q=%s' },
+  { id: 'local',  label: '站内',   icon: '\ue67e', url: null },
 ];
 
 /* nav.json 读取失败（file:// 直开会被 CORS 拦）时的内置兜底数据，
@@ -159,17 +164,15 @@ if (!ENGINES.some((e) => e.id === engine)) engine = 'bing';
 function renderEngineBar() {
   const bar = $('#engineBar');
   bar.innerHTML = '';
-  ENGINES.forEach((e, i) => {
-    if (i > 0) {
-      const sep = document.createElement('span');
-      sep.className = 'sep';
-      sep.textContent = '/';
-      bar.appendChild(sep);
-    }
+  ENGINES.forEach((e) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = e.label;
     btn.classList.toggle('active', e.id === engine);
+    // 图标：iconfont 码点优先，其次内联 SVG（GitHub octocat）
+    const icon = e.icon
+      ? `<span class="engine-icon lime-icon">${e.icon}</span>`
+      : `<span class="engine-icon">${e.svg || ''}</span>`;
+    btn.innerHTML = `${icon}<span>${esc(e.label)}</span>`;
     btn.addEventListener('click', () => setEngine(e.id));
     bar.appendChild(btn);
   });
@@ -319,9 +322,12 @@ function renderNav(items) {
       a.dataset.keywords =
         `${it.name || ''} ${it.id || ''} ${it.url || ''}`.toLowerCase();
 
-      const icon = it.icon || (it.name || '?').trim().charAt(0) || '?';
+      // 有 icon 用 emoji；没有则用青柠 iconfont 的文档图标，不再显示首字
+      const iconHtml = it.icon
+        ? esc(it.icon)
+        : '<span class="lime-icon" style="font-size:26px">\ue80f</span>';
       a.innerHTML =
-        `<span class="card-icon">${esc(icon)}</span>` +
+        `<span class="card-icon">${iconHtml}</span>` +
         `<span class="card-name">${esc(it.name)}</span>` +
         `<span class="dot" style="background:var(--dot-none)"></span>` +
         `<span class="card-status">暂无数据</span>`;

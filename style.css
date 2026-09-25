@@ -69,6 +69,21 @@
 /* ---------- 基础 ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ---------- 青柠 iconfont 图标 ---------- */
+@font-face {
+  font-family: "lime-icon";
+  src: url("fonts/iconfont.woff2") format("woff2");
+  font-display: block;
+}
+.lime-icon {
+  font-family: "lime-icon";
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
   min-height: 100svh;
   background: var(--bg-fallback);
@@ -216,7 +231,12 @@ body {
   background: var(--card-hover);
 }
 
-.search-icon { color: var(--text-sub); flex: none; }
+.search-icon {
+  color: var(--text-sub);
+  flex: none;
+  font-size: 19px;                 /* lime-icon 放大镜 */
+  transform: translateY(1px);      /* 字形基线微调 */
+}
 
 .search-box input {
   flex: 1;
@@ -230,33 +250,35 @@ body {
 }
 .search-box input::placeholder { color: var(--text-sub); }
 
-/* 引擎切换行：小灰字，当前项青柠绿高亮 */
+/* 引擎切换行：图标 + 文字胶囊，当前项青柠绿高亮 */
 .engine-bar {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 4px 2px;
+  gap: 4px 14px;
   font-size: 12px;
   color: var(--text-sub);
   user-select: none;
   text-shadow: var(--clock-shadow);       /* 照片背景上增强可读性 */
 }
-.engine-bar .sep { margin: 0 7px; opacity: .5; }
 .engine-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   border: none;
   background: none;
   padding: 2px 4px;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  transition: color .2s ease;
+  transition: color .2s var(--ease);
 }
 .engine-bar button:hover { color: var(--text); }
-.engine-bar button.active {
-  color: var(--accent);
-  font-weight: 600;
-}
+.engine-bar button.active { color: var(--accent); font-weight: 600; }
+.engine-bar .engine-icon { font-size: 14px; transform: translateY(1px); }
+.engine-bar .engine-icon svg { display: block; width: 13px; height: 13px; }
+.engine-bar button.active .engine-icon svg { fill: var(--accent); }
 
 /* ---------- 分类 tabs（仿青柠：横向胶囊切换） ---------- */
 .groups {
