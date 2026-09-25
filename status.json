@@ -1,5 +1,0 @@
-{
-  "blog": { "ok": true, "ping": 38 },
-  "api":  { "ok": false },
-  "mc":   { "online": 7, "max": 40, "version": "1.21.1", "accurate": true }
-}

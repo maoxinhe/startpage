@@ -185,7 +185,7 @@ body {
 .clock { text-align: center; user-select: none; margin-top: clamp(24px, 5vh, 48px); }
 
 .clock-time {
-  font-size: clamp(46px, 8.5vw, 64px);
+  font-size: clamp(56px, 12vw, 100px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: .01em;
@@ -354,11 +354,22 @@ body {
 .card-icon {
   font-size: 30px;
   line-height: 1;
-  width: 32px;
-  text-align: center;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   /* 无 icon 时的首字降级 */
   font-weight: 600;
   color: var(--accent);
+}
+
+/* 品牌图标（dashboard-icons / 官方 SVG）：统一圆角质感 */
+.card-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .card-name {

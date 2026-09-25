@@ -1,14 +1,9 @@
 [
-  { "id": "blog",  "name": "博客",      "url": "https://x.pages.dev",   "icon": "📝", "group": "我的" },
-  { "id": "photo", "name": "相册",      "url": "https://pic.x.pages.dev", "icon": "📷", "group": "我的" },
-  { "id": "note",  "name": "备忘",      "url": "https://note.x.pages.dev", "icon": "🗒️", "group": "我的" },
-  { "id": "api",   "name": "API",       "url": "https://api.x.fly.dev",               "group": "项目" },
-  { "id": "mon",   "name": "监控台",    "url": "https://status.x.com",  "icon": "📊", "group": "项目" },
-  { "id": "doc",   "name": "文档",      "url": "https://doc.x.com",     "icon": "📚", "group": "项目" },
-  { "id": "mc",    "name": "MC 服务器", "url": "mc://play.x.com",       "icon": "⛏️", "group": "游戏" },
-  { "name": "Steam",    "url": "https://store.steampowered.com", "icon": "🎮", "group": "游戏" },
-  { "name": "GitHub",   "url": "https://github.com",           "icon": "🐙", "group": "常用" },
-  { "name": "哔哩哔哩", "url": "https://www.bilibili.com",     "icon": "📺", "group": "常用" },
-  { "name": "天气预报", "url": "https://www.weather.com.cn/",  "icon": "🌤️", "group": "常用" },
-  { "name": "邮箱",     "url": "https://mail.qq.com",          "icon": "✉️", "group": "常用" }
+  { "id": "wiki",   "name": "Wiki",      "url": "https://catfix.top",       "icon": "assets/icons/bookstack.webp",   "group": "站点" },
+  { "id": "blog",   "name": "博客",      "url": "https://web.catfix.top",   "icon": "assets/icons/astro.svg",        "group": "站点" },
+  { "id": "dl",     "name": "下载站",    "url": "https://camzy.uno",        "icon": "assets/icons/gopeed.webp",      "group": "站点" },
+  { "id": "sso",    "name": "MZY SSO",   "url": "https://sso.camzy.uno",    "icon": "assets/icons/logto.webp",       "group": "服务" },
+  { "id": "api",    "name": "New API",   "url": "https://api.camzy.uno",    "icon": "assets/icons/new-api.webp",     "group": "服务" },
+  { "id": "status", "name": "服务状态",  "url": "https://status.camzy.uno", "icon": "assets/icons/uptime-kuma.webp", "group": "服务" },
+  { "id": "mc",     "name": "MC 服务器", "url": "mc://create.liminalily.com:25565", "icon": "assets/icons/minecraft.webp", "group": "游戏", "monitor": "minecraft" }
 ]
